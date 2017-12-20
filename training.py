@@ -4,10 +4,11 @@ import numpy as np
 import tools as tls
 
 class Training(object):
-    def __init__(self):
+    def __init__(self,smoothing_sample=5):
         self.data = {}
         self.data_length = 0
         self.i = 0
+        self.smoothing_sample = smoothing_sample
 
     def read_data(self, filename):
         fitfile_path = os.path.join('data', filename)
@@ -56,19 +57,21 @@ class Training(object):
         return self
 
     def next(self):
-
         if self.i < self.data_length:
             i = self.i
-            if i < 2:
-                self.stencil_ids = np.arange(i,3+i)
-            elif i > len(self.data["timestamp"])-3:
-                self.stencil_ids = np.arange(i-2,i+1)
+            if i < self.smoothing_sample:
+                self.stencil_ids = np.arange(i,i+self.smoothing_sample)
+            elif i > len(self.data["timestamp"])-self.smoothing_sample:
+                self.stencil_ids = np.arange(i-self.smoothing_sample+1,i+1)
             else:
-                self.stencil_ids  = np.arange(i-3,i+2)
+                self.stencil_ids  = np.arange(int(i-np.floor(self.smoothing_sample/2)),
+                                              int(i+np.ceil(self.smoothing_sample/2)))
             self.i += 1
             return self
         else:
+            self.i = 0
             raise StopIteration()
+
 
 
     def construct_stemcil(self):
@@ -81,10 +84,11 @@ class Training(object):
                 ids  = np.arange(i-3,i+2)
             print ids
 
-    def interpolate_and_derive_data(self):
+    def approximate_derivative(self,coord_x, coord_y,size):
         f = []
+        self.smoothing_sample = size
         for s in self:
-            x = self.data["timestamp"][self.stencil_ids]
-            y = self.data["distance"][self.stencil_ids]
-            f.append(tls.interpolate_and_get_derivative(x,y,.5))
+            x = self.data[coord_x][self.stencil_ids]
+            y = self.data[coord_y][self.stencil_ids]
+            f.append(tls.linear_regression(x,y))
         return np.array(f)
