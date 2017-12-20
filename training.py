@@ -1,6 +1,7 @@
 import os
 from fitparse import FitFile
 import numpy as np
+import tools as tls
 
 class Training(object):
     def __init__(self):
@@ -18,6 +19,7 @@ class Training(object):
         r0 = records[0]
         for field in r0:
             self.data[field.name] = []
+            print "field: ", field.name, "units: ", field.units
             if field.name == 'timestamp':
                 t0 = field.value
 
@@ -79,8 +81,10 @@ class Training(object):
                 ids  = np.arange(i-3,i+2)
             print ids
 
-    def explore_data(self):
+    def interpolate_and_derive_data(self):
+        f = []
         for s in self:
-            for k in self.data:
-                local_value = self.data[k][self.stencil_ids]
-                print local_value
+            x = self.data["timestamp"][self.stencil_ids]
+            y = self.data["distance"][self.stencil_ids]
+            f.append(tls.interpolate_and_get_derivative(x,y,.5))
+        return np.array(f)

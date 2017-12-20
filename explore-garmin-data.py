@@ -21,12 +21,16 @@ third_climb = Cycling()
 av_01.output_interval(200,2178,third_climb,True)
 
 
-third_climb.explore_data()
+speed = third_climb.interpolate_and_derive_data()
+print third_climb.data["distance"]
+
 
 # plt.plot(first_climb.data["timestamp"],
 #          first_climb.data["altitude"],'rx')
 # plt.plot(second_climb.data["timestamp"],
 #          second_climb.data["altitude"],'g-')
 # plt.plot(third_climb.data["timestamp"],
-#          third_climb.data["altitude"],'k-')
-# plt.show()
+#          third_climb.data["speed"])
+plt.plot(third_climb.data["timestamp"][30:-30],
+         speed[30:-30])
+plt.show()

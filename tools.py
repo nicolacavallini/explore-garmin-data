@@ -31,12 +31,16 @@ def least_squares(x,y,space):
     coeffs = np.linalg.solve(A, b)
     return coeffs
 
-def get_get_bernsetin_orede_two():
+def get_bernsetin_order_one():
+    return [lambda x : 1-x,
+            lambda x : x]
+
+def get_bernsetin_order_two():
     return [lambda x : (1-x)*(1-x),
             lambda x : 2*x*(1-x),
             lambda x : x*x]
 
-def get_get_bernsetin_derivs_orede_two():
+def get_bernsetin_derivs_orde_two():
     return [lambda x : -2*(1-x),
             lambda x : 2*(1-2*x),
             lambda x : 2*x]
@@ -51,3 +55,12 @@ def get_function(coeffs,space):
             function += c*f(sample)
         return function
     return lambda x : func(coeffs,space,x)
+
+def interpolate_and_get_derivative(x,y):
+    space = get_bernsetin_order_one()
+
+
+    coeffs = least_squares(x,y,space)
+
+    print coeffs
+    return df(sample)
