@@ -65,8 +65,9 @@ def get_function(coeffs,space):
         return function
     return lambda x : func(coeffs,space,x)
 
-def interpolate_and_get_derivative(x,y):
+def linear_regression(x,y):
     space = get_bernsetin_order_one()
-    space_prime = get_bernsetin_derivs_order_one()
     coeffs = least_squares(x,y,space)
-    return get_function(coeffs,space_prime)
+    slope = np.abs(coeffs[0]-coeffs[1])
+    slope =  slope/(np.amax(x)-np.amin(x))
+    return slope
