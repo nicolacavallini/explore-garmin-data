@@ -11,6 +11,11 @@ def bernstein_polynomial(n,i):
         return poly
     return lambda t : func(n,i,t)
 
+def normalize_function(v):
+    v_min = np.amin(v)
+    v_max = np.amax(v)
+    return lambda x : (x - v_min)/(v_max-v_min)
+
 def normalize(v):
     v = v - np.amin(v)
     v = v/np.amax(v)
@@ -35,12 +40,16 @@ def get_bernsetin_order_one():
     return [lambda x : 1-x,
             lambda x : x]
 
+def get_bernsetin_derivs_order_one():
+    return [lambda x : -1.,
+            lambda x : 1.]
+
 def get_bernsetin_order_two():
     return [lambda x : (1-x)*(1-x),
             lambda x : 2*x*(1-x),
             lambda x : x*x]
 
-def get_bernsetin_derivs_orde_two():
+def get_bernsetin_derivs_order_two():
     return [lambda x : -2*(1-x),
             lambda x : 2*(1-2*x),
             lambda x : 2*x]
@@ -58,9 +67,6 @@ def get_function(coeffs,space):
 
 def interpolate_and_get_derivative(x,y):
     space = get_bernsetin_order_one()
-
-
+    space_prime = get_bernsetin_derivs_order_one()
     coeffs = least_squares(x,y,space)
-
-    print coeffs
-    return df(sample)
+    return get_function(coeffs,space_prime)

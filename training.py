@@ -8,6 +8,7 @@ class Training(object):
         self.data = {}
         self.data_length = 0
         self.i = 0
+        self.stencil_size = 5
 
     def read_data(self, filename):
         fitfile_path = os.path.join('data', filename)
@@ -59,12 +60,15 @@ class Training(object):
 
         if self.i < self.data_length:
             i = self.i
-            if i < 2:
-                self.stencil_ids = np.arange(i,3+i)
-            elif i > len(self.data["timestamp"])-3:
-                self.stencil_ids = np.arange(i-2,i+1)
+            s = self.stencil_size
+            s_fw = np.int32(np.floor(s/2))
+            s_bk = np.int32(np.ceil(s/2))
+            if i < s:
+                self.stencil_ids = np.arange(i,s+i)
+            elif i > len(self.data["timestamp"])-s:
+                self.stencil_ids = np.arange(i-s_bk-1,i+s_fw-1)
             else:
-                self.stencil_ids  = np.arange(i-3,i+2)
+                self.stencil_ids  = np.arange(i-s,i)
             self.i += 1
             return self
         else:
@@ -86,5 +90,8 @@ class Training(object):
         for s in self:
             x = self.data["timestamp"][self.stencil_ids]
             y = self.data["distance"][self.stencil_ids]
-            f.append(tls.interpolate_and_get_derivative(x,y,.5))
+            sample = .5
+            w = np.amax(x)-np.amin(x)
+            der = tls.interpolate_and_get_derivative(x,y)(sample)/w
+            f.append(der)
         return np.array(f)
