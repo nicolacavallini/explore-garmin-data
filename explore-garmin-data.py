@@ -20,18 +20,15 @@ av_00.output_interval(4572,6620,second_climb,True)
 third_climb = Cycling()
 av_01.output_interval(200,2178,third_climb,True)
 
-
-speed = third_climb.approximate_derivative("timestamp",
-                                           "distance",5)
-
-slope = third_climb.approximate_derivative("distance",
-                                           "altitude",
-                                           5)
+speed = third_climb.interpolate_and_derive_data("timestamp","distance")
 
 
-
+# plt.plot(first_climb.data["timestamp"],
+#          first_climb.data["altitude"],'rx')
+# plt.plot(second_climb.data["timestamp"],
+#          second_climb.data["altitude"],'g-')
+plt.plot(third_climb.data["timestamp"],
+         third_climb.data["speed"])
 plt.plot(third_climb.data["timestamp"],
          speed)
-plt.plot(third_climb.data["timestamp"],
-         slope*100)
 plt.show()

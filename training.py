@@ -84,12 +84,11 @@ class Training(object):
                 ids  = np.arange(i-3,i+2)
             print ids
 
-    def approximate_derivative(self,coord_x, coord_y,size):
+    def interpolate_and_derive_data(self,coord_x, coord_y):
         f = []
-        self.smoothing_sample = size
         for s in self:
-            x = self.data["timestamp"][self.stencil_ids]
-            y = self.data["distance"][self.stencil_ids]
+            x = self.data[coord_x][self.stencil_ids]
+            y = self.data[coord_y][self.stencil_ids]
             sample = .5
             w = np.amax(x)-np.amin(x)
             der = tls.interpolate_and_get_derivative(x,y)(sample)/w
