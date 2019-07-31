@@ -47,8 +47,8 @@ def test_interpolation_01():
     df = tls.get_function(coeffs,space_prime)
 
 
-    print("df(.0) = ",df(.5))
-    print(" f(.0) = ", f(.5))
+    print(("df(.0) = ",df(.5)))
+    print((" f(.0) = ", f(.5)))
 
     x0 = normalize(np.amin(x))
     sample = np.linspace(0,1)
@@ -69,10 +69,10 @@ def test_iterator():
     av = Cycling()
     av.read_data('7C9A5608.FIT')
     f = av.interpolate_and_derive_data()
-    print(f[:6])
-    print(av.data["timestamp"][:6])
-    print(av.data["distance"][:6])
-    print(av.data["speed"][:6])
+    print((f[:6]))
+    print((av.data["timestamp"][:6]))
+    print((av.data["distance"][:6]))
+    print((av.data["speed"][:6]))
 
 
 

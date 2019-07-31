@@ -20,7 +20,7 @@ class Training(object):
         r0 = records[0]
         for field in r0:
             self.data[field.name] = []
-            print "field: ", field.name, "units: ", field.units
+            print("field: ", field.name, "units: ", field.units)
             if field.name == 'timestamp':
                 t0 = field.value
 
@@ -56,7 +56,7 @@ class Training(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         if self.i < self.data_length:
             i = self.i
             if i < self.smoothing_sample:
@@ -82,7 +82,7 @@ class Training(object):
                 ids = np.arange(i-2,i+1)
             else:
                 ids  = np.arange(i-3,i+2)
-            print ids
+            print(ids)
 
     def interpolate_and_derive_data(self,coord_x, coord_y):
         f = []
