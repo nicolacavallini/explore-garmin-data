@@ -2,6 +2,7 @@ import os
 from fitparse import FitFile
 import numpy as np
 import tools as tls
+import datetime
 
 class Training(object):
     def __init__(self,smoothing_sample=5):
@@ -30,14 +31,24 @@ class Training(object):
                     t = field.value-t0
                     self.data['timestamp'].append(t.total_seconds())
 
+
         for r in records[1:]:
             for field in r:
                 if field.name != 'timestamp':
-                    self.data[field.name].append(field.value)
+                    if field.name in self.data:
+                        self.data[field.name].append(field.value)
+                    else:
+                        self.data[field.name] = []
+                        self.data[field.name].append(field.value)
 
         for k in self.data:
             v = np.array(self.data[k])
+            print(k+" shape:",v.shape)
             self.data[k] = v
+
+        self.data["timedelta"] = np.array([0])
+
+        self.data["timedelta"] = np.hstack((self.data["timedelta"],np.diff(self.data["timestamp"])))
 
         self.data_length = len(self.data["timestamp"])
 
@@ -71,6 +82,28 @@ class Training(object):
         else:
             self.i = 0
             raise StopIteration()
+
+    def seconds_in_zone(self,zone):
+
+        time = self.data["timedelta"]
+        hr= self.data["heart_rate"]
+
+        offset = len(time)-len(hr)
+
+        time = time[offset:]
+
+        assert len(time)==len(hr), "time and hr must have the same dimension"
+
+        time_in_zone = 0
+
+        for t, h in zip(time,hr):
+            if (zone[0] < h and h < zone[1]):
+                time_in_zone+=t
+
+        return time_in_zone
+
+    def time_in_zone(self,zone):
+        return str(datetime.timedelta(seconds=self.seconds_in_zone(zone)))
 
 
 
