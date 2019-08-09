@@ -4,6 +4,36 @@ import numpy as np
 
 from scipy.special import binom as binomial
 
+import scipy.sparse as spr
+
+def non_negative(v):
+    ids = np.where(v<0)
+    v[ids] = 0
+    return v
+
+
+def forward_convolution(data,conv_amplitude,conv_function):
+    assert data.ndim==1, "data should be one dimensional arrays"
+
+    m = get_forward_convolution_matrix(data.shape[0],conv_amplitude,conv_function)
+
+    return m.dot(data)
+
+
+def get_forward_convolution_matrix(matrix_size,conv_amplitude,conv_function):
+
+    m = spr.dia_matrix((matrix_size, matrix_size),dtype=np.float64)
+
+    for i in range(conv_amplitude):
+
+        data = conv_function(i)*np.ones((m.shape[0],),dtype=np.float64)
+
+        d = spr.dia_matrix((data,i), shape=m.shape)
+
+        m+=d
+
+    return m
+
 def bernstein_polynomial(n,i):
     assert i in range(n+1), 'i out of range: [0,n)'
     def func(n,i,t):

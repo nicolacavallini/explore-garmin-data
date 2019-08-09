@@ -12,7 +12,8 @@ class Training(object):
         self.smoothing_sample = smoothing_sample
 
     def read_data(self, filename):
-        fitfile_path = os.path.join('data', filename)
+        fitfile_path = os.path.join('data/', filename)
+        print(fitfile_path)
         fitfile = FitFile(fitfile_path)
         fitfile.parse()
 
@@ -52,13 +53,13 @@ class Training(object):
 
         self.data_length = len(self.data["timestamp"])
 
-    def output_interval(self,start_record, end_record,interval,reset=False):
+    def output_interval(self,start_record, end_record,interval,reset_time=False):
         ids = np.where((self.data["timestamp"] > start_record) & (self.data["timestamp"] < end_record))
 
         for k in self.data:
             interval.data[k] = self.data[k][ids]
 
-        if reset:
+        if reset_time:
             interval.data["timestamp"] = interval.data["timestamp"] - interval.data["timestamp"][0]
 
         interval.data_length = len(interval.data["timestamp"])
@@ -104,7 +105,6 @@ class Training(object):
 
     def time_in_zone(self,zone):
         return str(datetime.timedelta(seconds=self.seconds_in_zone(zone)))
-
 
 
     def construct_stemcil(self):
